@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agenda</title>
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            color: rgba(0, 0, 0, 0.87);
+            background-color: #C2FFFC;
+            margin: 0;
+            padding: 0;
+            line-height: 1.5;
+        }
+
+        input {
+            font-family: 'Roboto', sans-serif;
+            font-size: 16px;
+            padding: 10px 12px;
+            border: none;
+            border-radius: 4px;
+            background-color: rgba(0, 0, 0, 0.09);
+            color: rgba(0, 0, 0, 0.87);
+            outline: none;
+            transition: background-color 0.3s ease;
+        }
+
+        input + label {
+            position: relative;
+            top: -60px;
+            left: 12px;
+            font-size: 16px;
+            color: rgba(0, 0, 0, 0.54);
+            pointer-events: none;
+            transition: all 0.3s ease;
+        }
+
+        input:not(:placeholder-shown) + label,
+        input:focus + label {
+            top: -75px;
+            left: 8px;
+            font-size: 12px;
+            color: #009B94;
+        }
+
+        input::after {
+            content: "";
+            display: block;
+            width: 100%;
+            height: 2px;
+            background-color: #009B94;
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+
+        input:focus::after {
+            transform: scaleX(1);
+        }
+
+        .card {
+            margin: 10px;
+            width: 300px;
+            background-color: #8AEAE5;
+            box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .material-button {
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            height: 36px;
+            padding: 0 16px;
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: 500;
+            letter-spacing: 0.02857em;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+            box-sizing: border-box;
+        }
+
+        .material-button--contained {
+            background-color: #30DED5;
+            color: #fff;
+            box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 3px 1px -2px rgba(0, 0, 0, 0.2), 0 1px 5px 0 rgba(0, 0, 0, 0.12);
+        }
+
+        .material-button--contained:hover {
+            background-color: #55DFD8;
+        }
+
+        .material-button--contained:active {
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.24), 0 1px 5px 0 rgba(0, 0, 0, 0.2);
+        }
+
+        .material-button--outlined {
+            border: 1px solid #30DED5;
+            color: #30DED5;
+        }
+
+        .material-button--outlined:hover {
+            background-color: #30DED5;
+            color: #fff;
+        }
+
+        .material-button--outlined:active {
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.24), 0 1px 5px 0 rgba(0, 0, 0, 0.2);
+        }
+
+        .card-header {
+            padding: 5px;
+            background-color: #55DFD8;
+        }
+
+        .todo-elancho {
+            width: 98%;
+        }
+
+        .bg-azul {
+            background-color: #30DED5;
+        }
+
+        .bg-amarillo {
+            background-color: #009B94;
+        }
+
+        .card-body {
+            padding: 20px;
+        }
+
+        .card-footer {
+            padding: 20px;
+            background-color: #55DFD8;
+        }
+
+        dialog {
+            padding: 20px;
+            background-color: #8AEAE5;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .titulo {
+            display: flex;
+            justify-content: center;
+        }
+        
+    </style>
+</head>
+
+<body onload="cargarDatos()">
+    <div class="card todo-elancho">
+        <div class="card-header bg-azul">
+            <h1 class="titulo">Agenda</h1>
+        </div>
+        <div class="card-body">
+            <label for="Nombre">Nombre</label><br>
+            <input class="todo-elancho" type="text" id="Nombre" name="Nombre"><br>
+
+            <label for="Direccion">Dirección</label><br>
+            <input class="todo-elancho" type="text" id="Direccion" name="Direccion"><br>
+
+            <label for="Telefono">Teléfono</label><br>
+            <input type="text" id="Telefono" name="Telefono"><br>
+
+            <label for="Correo">Correo</label><br>
+            <input type="email" id="Correo" name="Correo"><br>
+
+            <label for="Imagen">Imagen</label><br>
+            <input type="text" id="Imagen" name="Imagen"><br>
+        </div>
+        <div class="card-footer">
+            <button onclick="Agregar()" class="material-button material-button--contained">Agregar</button>
+            <button onclick="Buscar()" class="material-button material-button--contained">Buscar</button>
+            <button onclick="Eliminar()" class="material-button material-button--contained">Eliminar</button>
+        </div>
+    </div>
+
+    <div id="listado"></div>
+    <div id="resultado"></div>
+
+    <dialog id="editar">
+        <div class="card">
+            <div class="card-header bg-amarillo">
+                <h1>Editar</h1>
+            </div>
+            <div class="card-body">
+                <label for="eNombre">Nombre</label><br>
+                <input class="todo-elancho" type="text" id="eNombre" name="eNombre"><br>
+
+                <label for="eDireccion">Dirección</label><br>
+                <input class="todo-elancho" type="text" id="eDireccion" name="eDireccion"><br>
+
+                <label for="eTelefono">Teléfono</label><br>
+                <input type="text" id="eTelefono" name="eTelefono"><br>
+
+                <label for="eCorreo">Correo</label><br>
+                <input type="email" id="eCorreo" name="eCorreo"><br>
+
+                <label for="eImagen">Imagen</label><br>
+                <input type="text" id="eImagen" name="eImagen"><br>
+
+                <p id="id_editar" hidden></p>
+            </div>
+        </div>
+        <div class="card-footer">
+            <button onclick="guardarEditar()" class="material-button material-button--contained">Guardar</button>
+            <button onclick="this.closest('dialog').close()" class="material-button material-button--contained">Cancelar</button>
+        </div>
+    </dialog>
+    <dialog id="borrar">
+        <div class="card">
+            <div class="card-header bg-amarillo">
+                <h1>Borrar</h1>
+            </div>
+            <div class="card-body">
+                <label for="">¿Estás seguro de borrarlo?</label>
+                <p id="id_borrar" hidden></p>
+            </div>
+        </div>
+        <div class="card-footer">
+            <button onclick="BorrarSi()" class="material-button material-button--contained">Sí</button>
+            <button onclick="this.closest('dialog').close()" class="material-button material-button--contained">No</button>
+        </div>
+    </dialog>
+    <dialog id="buscar">
+        <div class="card">
+            <div class="card-header bg-amarillo">
+                <h1>Buscar</h1>
+            </div>
+            <div class="card-body">
+                <label for="">No se encontró ningún resultado similar a los criterios de búsqueda</label>
+            </div>
+        </div>
+        <div class="card-footer">
+            <button onclick="this.closest('dialog').close()" class="material-button material-button--contained">Salir</button>
+        </div>
+    </dialog>
+    <script>
+        // JavaScript functions here...
+        let lista = [];
+
+        // Función para guardar los datos en el localStorage
+        function guardarDatos() {
+            localStorage.setItem('lista', JSON.stringify(lista));
+        }
+
+        // Función para cargar los datos desde el localStorage
+        function cargarDatos() {
+            let datosGuardados = JSON.parse(localStorage.getItem('lista'));
+            if (datosGuardados) {
+                lista = datosGuardados;
+                MostrarPersonas();
+            }
+        }
+
+        function guardarEditar() {
+            let Nombre = document.getElementById("eNombre");
+            let Direccion = document.getElementById("eDireccion");
+            let Telefono = document.getElementById("eTelefono");
+            let Correo = document.getElementById("eCorreo");
+            let Imagen = document.getElementById("eImagen");
+            let id = document.getElementById("id_editar");
+            let n = Number(id.innerHTML);
+            lista[n].nombre = Nombre.value;
+            lista[n].direccion = Direccion.value;
+            lista[n].telefono = Telefono.value;
+            lista[n].correo = Correo.value;
+            lista[n].imagen = Imagen.value;
+
+            let editar = document.getElementById("editar");
+            editar.close();
+            guardarDatos();
+            MostrarPersonas();
+        }
+
+        function Editar(n) {
+            let Nombre = document.getElementById("eNombre");
+            let Direccion = document.getElementById("eDireccion");
+            let Telefono = document.getElementById("eTelefono");
+            let Correo = document.getElementById("eCorreo");
+            let Imagen = document.getElementById("eImagen");
+            let id = document.getElementById("id_editar");
+            id.innerHTML = n;
+            Nombre.value = lista[n].nombre;
+            Direccion.value = lista[n].direccion;
+            Telefono.value = lista[n].telefono;
+            Correo.value = lista[n].correo;
+            Imagen.value = lista[n].imagen;
+            let editar = document.getElementById("editar");
+            editar.showModal();
+        }
+
+        function BorrarSi() {
+            let id = document.getElementById("id_borrar");
+            let n = Number(id.innerHTML);
+            lista.splice(n, 1); // Elimina la persona de la lista        
+            let borrar = document.getElementById("borrar");
+            borrar.close();
+            guardarDatos();
+            MostrarPersonas();
+        }
+
+        function Borrar(n) {
+            let Nombre = document.getElementById("eNombre");
+            let Direccion = document.getElementById("eDireccion");
+            let Telefono = document.getElementById("eTelefono");
+            let Correo = document.getElementById("eCorreo");
+            let Imagen = document.getElementById("eImagen");
+            let id = document.getElementById("id_borrar");
+            id.innerHTML = n;
+            Nombre.value = lista[n].nombre;
+            Direccion.value = lista[n].direccion;
+            Telefono.value = lista[n].telefono;
+            Correo.value = lista[n].correo;
+            Imagen.value = lista[n].imagen;
+            let borrar = document.getElementById("borrar");
+            borrar.showModal();
+        }
+
+        function MostrarPersonas() {
+            let listado = document.getElementById("listado");
+            let html = '<div style="display: flex;flex-wrap: wrap;">';
+            for (let i = 0; i < lista.length; i++) {
+                html += '<div class="card">';
+                html += '<div class="card-header bg-amarillo">';
+                html += `<h1>${lista[i].nombre}</h1>`;
+                html += '</div>';
+                html += '<div class="card-body">';
+                html += `<p><b>Dirección</b><br>${lista[i].direccion}</p>`;
+                html += `<p><b>Teléfono</b><br>${lista[i].telefono}</p>`;
+                html += `<p><b>Correo</b><br>${lista[i].correo}</p>`;
+                html += `<p><b>Imagen</b><br><img src="${lista[i].imagen}"></p>`;
+                html += '</div>';
+                html += '<div class="card-footer">';
+                html += `<button onclick="Borrar(${i})" class="material-button material-button--outlined">Borrar</button>`;
+                html += `<button onclick="Editar(${i})" class="material-button material-button--outlined">Editar</button>`;
+                html += '</div></div>';
+            }
+            html += '</div>';
+            listado.innerHTML = html;
+        }
+
+        function Agregar() {
+            let Nombre = document.getElementById("Nombre");
+            let Direccion = document.getElementById("Direccion");
+            let Telefono = document.getElementById("Telefono");
+            let Correo = document.getElementById("Correo");
+            let Imagen = document.getElementById("Imagen");
+            lista.push({
+                nombre: Nombre.value,
+                direccion: Direccion.value,
+                telefono: Telefono.value,
+                correo: Correo.value,
+                imagen: Imagen.value
+            });
+
+            //Limpiar campos
+            Nombre.value = "";
+            Direccion.value = "";
+            Telefono.value = "";
+            Correo.value = "";
+            Imagen.value = "";
+            guardarDatos();
+            MostrarPersonas();
+        }
+
+       // Función para buscar personas en la lista y mostrar solo los resultados filtrados.
+       function Buscar() {
+    // Obtiene los criterios de búsqueda del formulario.
+    let Nombre = document.getElementById("Nombre").value;
+    let Direccion = document.getElementById("Direccion").value;
+    let Telefono = document.getElementById("Telefono").value;
+    let Correo = document.getElementById("Correo").value;
+    let Imagen = document.getElementById("Imagen").value;
+    let listado = document.getElementById("listado");
+    let html = '<div style="display: flex;flex-wrap: wrap;">';
+    // Filtra las personas que coinciden con los criterios de búsqueda.
+    let resultadosFiltrados = lista.filter(persona => {
+        return (Nombre && persona.nombre.toLowerCase().includes(Nombre.toLowerCase())) ||
+            (Direccion && persona.direccion.toLowerCase().includes(Direccion.toLowerCase())) ||
+            (Telefono && persona.telefono.toLowerCase().includes(Telefono.toLowerCase())) ||
+            (Correo && persona.correo.toLowerCase().includes(Correo.toLowerCase())) ||
+            (Imagen && persona.imagen.toLowerCase().includes(Imagen.toLowerCase()));
+    });
+    // Si se encontraron resultados, muestra las personas encontradas.
+    if (resultadosFiltrados.length > 0) {
+        resultadosFiltrados.forEach((persona, index) => {
+            html += '<div class="card">';
+            html += '<div class="card-header bg-amarillo">';
+            html += `<h1>${persona.nombre}</h1>`;
+            html += '</div>';
+            html += '<div class="card-body">';
+            html += `<p><b>Dirección</b><br>${persona.direccion}</p>`;
+            html += `<p><b>Teléfono</b><br>${persona.telefono}</p>`;
+            html += `<p><b>Correo</b><br>${persona.correo}</p>`;
+            html += `<p><b>Imagen</b><br><img src="${persona.imagen}" ></p>`;
+            html += '</div>';
+            html += '<div class="card-footer">';
+            // Agrega botones para editar y borrar cada persona encontrada.
+            html += `<button onclick="Borrar(${lista.indexOf(persona)})" class="material-button material-button--outlined">Borrar</button>`;
+            html += `<button onclick="Editar(${lista.indexOf(persona)})" class="material-button material-button--outlined">Editar</button>`;
+            html += '</div></div>';
+        });
+        html += '</div>';
+        listado.innerHTML = html;
+    } else {
+        // Si no se encontraron resultados, muestra un mensaje de búsqueda vacía.
+        let buscar = document.getElementById("buscar");
+        buscar.showModal();
+    }
+}
+
+
+        function Eliminar() {
+            lista.pop();
+            guardarDatos();
+            MostrarPersonas();
+        }
+    </script>
+</body>
+
+</html>

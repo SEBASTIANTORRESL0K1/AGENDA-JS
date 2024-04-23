@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Lista de Nombres</title>
+
+    <style type="text/css">
+
+        .elementoli {
+
+            border-color: blueviolet;
+
+            border-width: 2px;
+
+            padding: 5px;
+
+            border-style: solid;
+
+            border-radius: 10px;
+
+            margin: 4px;
+
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+    <h1>Lista de Nombres</h1>
+
+    <label>Ingrese un nombre:</label>
+
+    <input type="text" id="nombre">
+
+    <button onclick="Agregar()">Agregar</button>
+
+    <div id="listado"></div>
+
+ 
+
+    <label>Buscar nombre:</label>
+
+    <input type="text" id="busqueda">
+
+    <button onclick="Buscar()">Buscar</button>
+
+ 
+
+    <script>
+        
+        let nombres = [];
+
+        function mostrarLista(filtro = "") {
+
+            let html = "<ul>";
+
+            for (let i = 0; i < nombres.length; i++) {
+
+                if (nombres[i].toLowerCase().includes(filtro.toLowerCase())) {
+
+                    html += `<li class="elementoli">${nombres[i]} <button onclick="Eliminar(${i})">Eliminar</button> <button onclick="Editar(${i})">Editar</button></li>`;
+
+                }
+
+            }
+
+            html += "</ul>";
+
+            document.getElementById("listado").innerHTML = html;
+
+        }
+
+        // function Agregar() {
+
+        //     var nombre = document.getElementById("nombre");
+
+        //     var valor = nombre.value.trim();
+
+        //     if (valor !== "") {
+
+        //         nombres.push(valor);
+
+        //         mostrarLista();
+
+        //         nombre.value = "";
+
+        //     } else {
+
+        //         alert("Por favor, ingrese un nombre válido.");
+
+        //     }
+
+        // }
+
+        // function Eliminar(index) {
+
+        //     if (index >= 0 && index < nombres.length) {
+
+        //         nombres.splice(index, 1);
+
+        //         mostrarLista();
+
+        //     }
+
+        // }
+
+        // function Editar(index) {
+
+        //     if (index >= 0 && index < nombres.length) {
+
+        //         let nuevoNombre = prompt("Ingrese el nuevo nombre:", nombres[index]);
+
+        //         if (nuevoNombre !== null && nuevoNombre.trim() !== "") {
+
+        //             nombres[index] = nuevoNombre.trim();
+
+        //             mostrarLista();
+
+        //         }
+
+        //     }
+
+        // }
+
+        function Buscar() {
+
+            let busqueda = document.getElementById("busqueda").value.trim();
+
+            mostrarLista(busqueda);
+
+        }
+
+    </script>
+
+</body>
+
+</html>
